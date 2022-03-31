@@ -10,6 +10,8 @@ public class Client {
     private Socket socket;
     private String ip;
     private int port;
+    private PrintWriter out;
+    private ListenerThread in;
 
     public Client(String ip, int port) {
         try {
@@ -19,20 +21,25 @@ public class Client {
             System.exit(0);
         }
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(),true);
-            ListenerThread in = new ListenerThread(new BufferedReader(new InputStreamReader(socket.getInputStream()
-             )));
+            out = new PrintWriter(socket.getOutputStream(),true);
+            in =
+                    new ListenerThread(
+                    new BufferedReader(
+                    new InputStreamReader(socket.getInputStream())));
             Thread listener = new Thread(in);
             listener.start();
-
-            Scanner tgb = new Scanner(System.in);
-
-            //out.close();
-            //socket.close();
-            //System.out.println("Done!");
+            boolean run = true;
+            while (run) {
+                sendMessage();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+    private void sendMessage() {
+        Scanner tgb = new Scanner(System.in);
+        String msg = tgb.nextLine();
+        out.println("Client: " + msg);
     }
 }
